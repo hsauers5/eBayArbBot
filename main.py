@@ -2,11 +2,8 @@ import sys
 import time
 
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-import requests
-import json
-import urllib
+from selenium.webdriver.firefox.options import Options
 
 
 class Robot:
