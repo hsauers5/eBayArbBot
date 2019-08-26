@@ -52,6 +52,7 @@ def get_walmart_items_in_category(category="bikes"):
     return item_list
 
 
+# gets average asking price on ebay - skews too high
 def find_ebay_price(item_name):
     robot = Robot()
     ebay_base_url = "https://www.ebay.com/sch/i.html?&LH_BIN=1&_nkw="
@@ -81,37 +82,6 @@ def find_ebay_price(item_name):
 
 
 def find_market_price(item_name):
-    '''
-    checkaflip_url = "http://www.checkaflip.com/api"
-    headers = { "Host": "www.checkaflip.com",
-                "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0",
-                "Accept": "application/json, text/javascript, */*; q=0.01",
-                "Accept-Language": "en-US,en;q=0.5",
-                "Accept-Encoding": "gzip, deflate",
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "X-Requested-With": "XMLHttpRequest",
-                "Content-Length": "195",
-                "Connection": "keep-alive",
-                "Cookie": "SESSION=DZ9t7XI/cpTUre0qwjvxJWmZodcYgov3GzvNjDyezZnHJC9phaV5HJHmkDysEjqbv8Mi+dXqYnSkLAsJQOPxMD3Z4qv3w4abPgg/8XKjDRvL5fW3fX3z2GbepkMD1oSqUxre2Y0JCi8=; __utma=212496454.1086769493.1566794906.1566794906.1566794906.1; __utmb=212496454.5.10.1566794906; __utmc=212496454; __utmz=212496454.1566794906.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1",
-                "Referer": "http://www.checkaflip.com/",
-                "Pragma": "no-cache",
-                "Cache-Control": "no-cache"
-                }
-
-    params = 'json=' + urllib.parse.quote_plus('{"instance":"SearchCompleted","slot1":'
-                                               '"Sceptre 50 Class FHD (1080P) LED TV (X505BV-FSR)",'
-                                               '"slot2":false,"slot3":{"instance":"Returns"}}')
-
-    # need parentheses ???
-    params = params.replace("%28", "(")
-    params = params.replace("%29", ")")
-    print(params)
-
-    resp = requests.post(checkaflip_url, params=params, headers=headers)
-    print(resp)
-    return float(json.loads(resp.text)['slot1'])
-    '''
-
     robot = Robot()
     robot.browser.get("http://www.checkaflip.com/")
     time.sleep(2)
@@ -121,11 +91,6 @@ def find_market_price(item_name):
     robot.browser.find_element_by_id("query").send_keys(item_name)
 
     time.sleep(1)
-    '''
-    while robot.browser.find_element_by_class_name("btn-default dropdown-toggle").get_attribute("value") != "new":
-        robot.browser.find_element_by_class_name("btn-default dropdown-toggle").__setattr__("value", "new")
-        print(robot.browser.find_element_by_class_name("btn-default dropdown-toggle").get_attribute("value"))
-    '''
 
     robot.browser.find_element_by_class_name("btn-default").__setattr__("value", "New")
     robot.browser.execute_script('document.getElementsByClassName("btn btn-default dropdown-toggle")[0]'
