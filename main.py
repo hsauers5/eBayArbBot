@@ -142,7 +142,11 @@ def find_market_price(item_name):
 
     count = 0
     while True and (price == "" or price == None or price == 'calculating...'):
+        if count >= 15:
+            price = -1
+            break
         price = robot.browser.find_element_by_id("complavgprice").text
+        count += 1
 
     if price == "" or price == None:
         price = -1
