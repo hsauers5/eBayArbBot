@@ -17,7 +17,7 @@ class Robot:
 
 def get_walmart_items_in_category(category="bikes"):
     robot = Robot()
-    base_url = "https://www.walmart.com/search/?cat_id=0&facet=customer_rating%3A4+-+5+Stars||" \
+    base_url = "https://www.walmart.com/search/?cat_id=0&search_redirect=false&grid=true&facet=customer_rating%3A4+-+5+Stars||" \
                "pickup_and_delivery%3A2-Day+Shipping&query="
     query = category
 
