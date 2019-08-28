@@ -1,5 +1,6 @@
 import sys
 import time
+import json
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -78,7 +79,7 @@ def find_ebay_price(item_name):
     return avg_price
 
 
-def find_market_price(item_name):
+def find_market_data(item_name):
     robot = Robot()
     robot.browser.get("http://www.checkaflip.com/")
     time.sleep(2)
@@ -101,6 +102,7 @@ def find_market_price(item_name):
     time.sleep(2)
 
     price = ""
+    percent_sold = ""
 
     count = 0
     while True and (price == "" or price == None or price == 'calculating...'):
@@ -110,11 +112,21 @@ def find_market_price(item_name):
         price = robot.browser.find_element_by_id("complavgprice").text
         count += 1
 
+    count = 0
+    while True and (percent_sold == "" or percent_sold == None or percent_sold == 'calculating...'):
+        if count >= 15:
+            percent_sold = -1
+            break
+        percent_sold = robot.browser.find_element_by_id("percentsold").text
+        count += 1
+
     if price == "" or price == None:
         price = -1
 
+    num_sold = len(robot.browser.find_element_by_id('completed-listings').find_elements_by_class_name('listing'))
+
     robot.browser.quit()
-    return float(price)
+    return [float(price), float(percent_sold), float(num_sold)]
 
 
 def find_arbs(category="bikes"):
@@ -127,8 +139,24 @@ def find_arbs(category="bikes"):
     # get ebay pricing
     for item in items:
         print(item['name'])
-        item['ebay_price'] = find_market_price(item['name'])
-        print("Prices | Walmart: " + str(item['walmart_price']) + " / eBay: " + str(item['ebay_price']))
+        '''
+        item_data = []
+        try:
+            item_data = find_market_data(item['name'])
+        except:
+            try:
+                item_data = find_market_data(item['name'])
+            except:
+                item_data = [-1, -1, -1]
+        '''
+        item_data = find_market_data(item['name'])
+
+        item['ebay_price'] = item_data[0]
+        item['percent_sold'] = item_data[1]
+        item['num_sold'] = item_data[2]
+
+        print("Prices | Walmart: " + str(item['walmart_price']) + " / eBay: " + str(item['ebay_price']) + " | "
+              + "Percent Sold: " + str(item['percent_sold']) + " Num Sold: " + str(item['num_sold']))
 
         # determine if arb opportunity exists
         margin = 0.15
@@ -137,11 +165,18 @@ def find_arbs(category="bikes"):
 
     print("\n Arbs found: ")
     print(arbs)
+    return arbs
 
 
 if __name__ == "__main__":
+
     category = "tv"
     if len(sys.argv) >= 1:
         category = sys.argv[1]
-    find_arbs(category=category)
-    # print(find_market_price('Sceptre 50" Class FHD (1080P) LED TV (X505BV-FSR)'))
+    my_arbs = find_arbs(category=category)
+
+    with open("items.json", "w") as json_file:
+        json_file.write(json.dumps(my_arbs))
+
+    import create_spreadsheet
+    create_spreadsheet.create_spreadsheet()
